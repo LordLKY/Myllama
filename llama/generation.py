@@ -412,8 +412,8 @@ def sample_top_p(probs, p):
 
     """
     probs_sort, probs_idx = torch.sort(probs, dim=-1, descending=True)
-    probs_sum = torch.cumsum(probs_sort, dim=-1)
-    mask = probs_sum - probs_sort > p
+    probs_sum = torch.cumsum(probs_sort, dim=-1)  # cumsum: [1, 2, 3] -> [1, 1+2, 1+2+3]
+    mask = probs_sum - probs_sort > p  # 未被mask的概率值之和超过了p
     probs_sort[mask] = 0.0
     probs_sort.div_(probs_sort.sum(dim=-1, keepdim=True))
     next_token = torch.multinomial(probs_sort, num_samples=1)
